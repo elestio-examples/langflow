@@ -13,8 +13,6 @@ services:
       # - ../:/app
       - ./scripts/startup-backend.sh:/startup-backend.sh # Ensure the paths match
     command: /startup-backend.sh # Fixed the path
-    ports:
-      - 172.17.0.1:7860:7860
 
   db:
     image: elestio/postgres:15
