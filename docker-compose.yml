@@ -1,0 +1,95 @@
+version: "3.8"
+
+services:
+  backend: &backend
+    image: "elestio4test/langflow-backend:latest"
+    depends_on:
+      - db
+      - broker
+      - result_backend
+    env_file:
+      - .env
+    volumes:
+      # - ../:/app
+      - ./scripts/startup-backend.sh:/startup-backend.sh # Ensure the paths match
+    command: /startup-backend.sh # Fixed the path
+    healthcheck:
+      test: "exit 0"
+    ports:
+      - 172.17.0.1:7860:7860
+
+  db:
+    image: elestio/postgres:15
+    volumes:
+      - storage/app-db-data:/var/lib/postgresql/data/pgdata
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   networks:
+  #     - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+  #     - default
+  #   volumes:
+  #     - pgadmin-data:/var/lib/pgadmin
+  #   env_file:
+  #     - .env
+  #   deploy:
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+  #       - traefik.constraint-label=${TRAEFIK_PUBLIC_TAG?Variable not set}
+  #       - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.rule=Host(`pgadmin.${DOMAIN?Variable not set}`)
+  #       - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.entrypoints=http
+  #       - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.middlewares=${STACK_NAME?Variable not set}-https-redirect
+  #       - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.rule=Host(`pgadmin.${DOMAIN?Variable not set}`)
+  #       - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.entrypoints=https
+  #       - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.tls=true
+  #       - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.tls.certresolver=le
+  #       - traefik.http.services.${STACK_NAME?Variable not set}-pgadmin.loadbalancer.server.port=5050
+
+  result_backend:
+    image: elestio/redis:6.0
+    env_file:
+      - .env
+    ports:
+      - 172.17.0.1:6379:6379
+
+  celeryworker:
+    <<: *backend
+    env_file:
+      - .env
+    command: celery -A langflow.worker.celery_app worker --loglevel=INFO --concurrency=1 -n lf-worker@%h
+
+  flower:
+    <<: *backend
+    env_file:
+      - .env
+    environment:
+      - FLOWER_PORT=5555
+    command: /bin/sh -c "celery -A langflow.worker.celery_app --broker=${BROKER_URL?Variable not set} flower --port=5555"
+
+  frontend:
+    image: "elestio4test/langflow-frontend:latest"
+    restart: always
+    env_file:
+      - .env
+    # user: your-non-root-user
+    ports:
+      - 172.17.0.1:4545:3000
+
+  broker:
+    # RabbitMQ management console
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:-admin}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:-admin}
+    volumes:
+      - ./storage/rabbitmq_data:/etc/rabbitmq/
+      - ./storage/rabbitmq_data:/var/lib/rabbitmq/
+      - ./storage/rabbitmq_log:/var/log/rabbitmq/
+    ports:
+      - 5672:5672
+      - 15672:15672
