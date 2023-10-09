@@ -13,15 +13,13 @@ services:
       # - ../:/app
       - ./scripts/startup-backend.sh:/startup-backend.sh # Ensure the paths match
     command: /startup-backend.sh # Fixed the path
-    healthcheck:
-      test: "exit 0"
     ports:
       - 172.17.0.1:7860:7860
 
   db:
     image: elestio/postgres:15
     volumes:
-      - storage/app-db-data:/var/lib/postgresql/data/pgdata
+      - ./storage/app-db-data:/var/lib/postgresql/data/pgdata
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
     env_file:
