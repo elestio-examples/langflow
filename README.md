@@ -4,7 +4,7 @@
 
 Deploy Langflow server with CI/CD on Elestio
 
-<img src="langflow.png" style='width: 100%;'/>
+<img src="langflow.gif" style='width: 100%;'/>
 <br/>
 <br/>
 
@@ -13,11 +13,11 @@ Deploy Langflow server with CI/CD on Elestio
 You can open Langflow UI here:
 
     URL: https://[CI_CD_DOMAIN]
-    email: [ADMIN_EMAIL]
+    login: admin
     password: [ADMIN_PASSWORD]
 
 You can open pgAdmin web UI here:
 
-    URL: https://[CI_CD_DOMAIN]:56882
+    URL: https://[CI_CD_DOMAIN]:34941
     email: [ADMIN_EMAIL]
     password: [ADMIN_PASSWORD]

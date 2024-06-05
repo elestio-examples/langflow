@@ -2,20 +2,26 @@ ports:
   - protocol: "HTTPS"
     targetProtocol: "HTTP"
     listeningPort: "443"
-    targetPort: "4545"
+    targetPort: "21273"
     targetIP: "172.17.0.1"
     public: true
     path: "/"
     isAuth: false
   - protocol: "HTTPS"
     targetProtocol: "HTTP"
-    listeningPort: "56882"
-    targetPort: "15683"
+    listeningPort: "34941"
+    targetPort: "46214"
     targetIP: "172.17.0.1"
     public: true
     path: "/"
     isAuth: false
 environments:
+  - key: "SOFTWARE_VERSION_TAG"
+    value: "latest"
+  - key: "ADMIN_EMAIL"
+    value: "[EMAIL]"
+  - key: "ADMIN_PASSWORD"
+    value: "random_password"
   - key: "DOMAIN"
     value: "[CI_CD_DOMAIN]"
   - key: "STACK_NAME"
@@ -32,8 +38,8 @@ environments:
     value: "5432"
   - key: "DB_NAME"
     value: "langflow"
-  - key: "LOG_LEVEL"
-    value: "debug"
+  - key: "LANGFLOW_SUPERUSER"
+    value: "admin"
 
 config:
   runTime: "dockerCompose"
@@ -43,7 +49,7 @@ config:
   buildDir: "/"
   runCommand: "docker-compose up -d"
   icon: ""
-  screenshot: "langflow.png"
+  screenshot: "langflow.gif"
 lifeCycleConfig:
   preInstallCommand: "./scripts/preInstall.sh"
   postInstallCommand: "./scripts/postInstall.sh"
@@ -57,7 +63,7 @@ webUI:
     label: "Langflow"
     login: "[ADMIN_EMAIL]"
     password: "[ADMIN_PASSWORD]"
-  - url: "https://[CI_CD_DOMAIN]:56882"
+  - url: "https://[CI_CD_DOMAIN]:34941"
     label: "PgAdmin"
     login: "[ADMIN_EMAIL]"
     password: "[ADMIN_PASSWORD]"

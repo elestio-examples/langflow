@@ -2,15 +2,19 @@ version: "3.8"
 
 services:
   langflow:
-    image: langflowai/langflow:latest
+    image: langflowai/langflow:${SOFTWARE_VERSION_TAG}
     ports:
-      - "172.17.0.1:4545:7860"
+      - "172.17.0.1:21273:7860"
     depends_on:
       - postgres
     environment:
       - LANGFLOW_DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
-      # This variable defines where the logs, file storage, monitor data and secret keys are stored.
       - LANGFLOW_CONFIG_DIR=/var/lib/langflow
+      - LANGFLOW_SUPERUSER=${LANGFLOW_SUPERUSER}
+      - LANGFLOW_SUPERUSER_PASSWORD=${ADMIN_PASSWORD}
+      - LANGFLOW_AUTO_LOGIN=False
+      - LANGFLOW_SECRET_KEY=${LANGFLOW_SECRET_KEY}
+      - LANGFLOW_NEW_USER_IS_ACTIVE=False
     volumes:
       - ./langflow-data:/var/lib/langflow
 
@@ -33,6 +37,6 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${ADMIN_PASSWORD}
       PGADMIN_LISTEN_PORT: 8080
     ports:
-      - "172.17.0.1:15683:8080"
+      - "172.17.0.1:46214:8080"
     volumes:
       - ./servers.json:/pgadmin4/servers.json
