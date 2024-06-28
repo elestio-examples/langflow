@@ -16,7 +16,7 @@ services:
       - LANGFLOW_SECRET_KEY=${LANGFLOW_SECRET_KEY}
       - LANGFLOW_NEW_USER_IS_ACTIVE=False
     volumes:
-      - ./langflow-data:/var/lib/langflow
+      - ./langflow-data:/var/lib/langflow:rw
 
   postgres:
     image: elestio/postgres:16
