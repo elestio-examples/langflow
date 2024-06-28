@@ -1,6 +1,10 @@
 #set env vars
 set -o allexport; source .env; set +o allexport;
 
+
+mkdir -p ./langflow-data
+chown -R 1000:1000 ./langflow-data
+
 LANGFLOW_SECRET_KEY=$(openssl rand -hex 32)
 
 cat << EOT >> ./.env
