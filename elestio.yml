@@ -61,7 +61,7 @@ lifeCycleConfig:
 webUI:
   - url: "https://[CI_CD_DOMAIN]"
     label: "Langflow"
-    login: "[ADMIN_EMAIL]"
+    login: "admin"
     password: "[ADMIN_PASSWORD]"
   - url: "https://[CI_CD_DOMAIN]:34941"
     label: "PgAdmin"
