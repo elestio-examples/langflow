@@ -5,13 +5,20 @@ set -o allexport; source .env; set +o allexport;
 mkdir -p ./langflow-data
 chown -R 1000:1000 ./langflow-data
 
-LANGFLOW_SECRET_KEY=$(openssl rand -hex 32)
+# Check if LANGFLOW_SECRET_KEY already exists in the .env file
+if ! grep -q "^LANGFLOW_SECRET_KEY=" .env; then
+    # Generate a new LANGFLOW_SECRET_KEY if not already set
+    LANGFLOW_SECRET_KEY=$(openssl rand -hex 32)
 
-cat << EOT >> ./.env
+    # Append the key to the .env file
+    cat <<EOT >> ./.env
 
 LANGFLOW_SECRET_KEY=${LANGFLOW_SECRET_KEY}
 
 EOT
+else
+    echo "LANGFLOW_SECRET_KEY already exists in .env. Skipping key generation."
+fi
 
 
 cat <<EOT > ./servers.json
